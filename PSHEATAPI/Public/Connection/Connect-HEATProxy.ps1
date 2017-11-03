@@ -28,9 +28,9 @@
     the Get-Credential pop-up window.
 
     .EXAMPLE
-    Connect-HEATProxy -TenantID "HDJNU01" -Role 'Admin' -Credential (Get-Credential) -NoSSL
+    Connect-HEATProxy -TenantID "HDSRV01" -Role 'Admin' -Credential (Get-Credential) -NoSSL
 
-    Opens a connection to HDJNU01, under the Admin role using the credentials provided and going to an http endpoint.
+    Opens a connection to HDSRV01, under the Admin role using the credentials provided and going to an http endpoint.
     .NOTES
     Please remember that cached credentials are only available to the user that cached them, from the device that
     they were cached on. Take this into account when setting up scheduled tasks or when testing in your own lab.
