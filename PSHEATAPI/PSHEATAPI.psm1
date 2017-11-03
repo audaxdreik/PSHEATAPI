@@ -30,7 +30,9 @@ if ((Test-Path $PSScriptRoot\data\config.json) -and (Test-Path $PSScriptRoot\dat
         
         } catch {
         
-            Write-Warning -Message 'unable to initiate web service proxy connection, check cached credentials or manually rerun Connect-HEATProxy'
+            Write-Warning -Message 'Unable to initiate web service proxy connection, check cached credentials or manually rerun Connect-HEATProxy.'
         
         }    
+} else {
+    Write-Warning -Message 'Please manually run Connect-HEATProxy or set the config.json file and run Set-CachedCredentials.'
 }
