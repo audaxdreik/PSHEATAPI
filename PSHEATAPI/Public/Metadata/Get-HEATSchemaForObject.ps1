@@ -89,11 +89,8 @@ function Get-HEATSchemaForObject {
             opposed to the raw text of the xml.
         #>
         # $response
-        if ($response -match '<?xml version="1.0"') {
             [xml]$response
-        } else {
-            $response
-        }
+
 
     }
 

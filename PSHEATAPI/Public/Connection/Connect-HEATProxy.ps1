@@ -93,6 +93,13 @@ function Connect-HEATProxy {
         }
 
     }
+    if (-not $NoSSL) {
+        if ($script:HEATCONNECTION.NoSSL) {
+            $NoSSL = $true
+        } else {
+            $NoSSL = $false
+        }
+    }
     if ($NoSSL) {
         $webProxyUri = "http://$TenantID/HEAT/ServiceAPI/FRSHEATIntegration.asmx?wsdl"  # Kreloc needed /HEAT/ in his environment, not sure how true that is for other on prem.
     } else {
@@ -126,6 +133,8 @@ function Connect-HEATProxy {
     $script:HEATCONNECTION | Add-Member -NotePropertyName 'tenantId' -NotePropertyValue $TenantID
     # add the role to the connection proxy so we can easily reference it to renew when session expires
     $script:HEATCONNECTION | Add-Member -NotePropertyName 'role'     -NotePropertyValue $Role
+    # add if NoSSL was used
+    $script:HEATCONNECTION | Add-Member -NotePropertyName 'NoSSL' -NotePropertyValue $NoSSL
 
     Write-Verbose -Message "connection to $webProxyUri succeeded"
 
