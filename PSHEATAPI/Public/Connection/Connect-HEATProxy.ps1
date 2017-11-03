@@ -14,6 +14,8 @@
     will need to provide your own credentials via Get-Credential. The username is just your network username (i.e.
     'jdoe') and your current network password. Ensure that you are passing an appropriate -Role attached to that
     account.
+    .PARAMETER NoSSL
+    Use this to connect to a HEAT server using http.
     .EXAMPLE
     PS C:\>Connect-HEATProxy -TenantID 'my.tenant.id' -Role 'Admin II'
 
@@ -24,6 +26,11 @@
 
     Opens a connection to 'my.tenant.id', under the 'Service Desk Analyst' role using the credentials provided from
     the Get-Credential pop-up window.
+
+    .EXAMPLE
+    Connect-HEATProxy -TenantID "HDSRV01" -Role 'Admin' -Credential (Get-Credential) -NoSSL
+
+    Opens a connection to HDSRV01, under the Admin role using the credentials provided and going to an http endpoint.
     .NOTES
     Please remember that cached credentials are only available to the user that cached them, from the device that
     they were cached on. Take this into account when setting up scheduled tasks or when testing in your own lab.
@@ -35,10 +42,13 @@ function Connect-HEATProxy {
         [Parameter(Position = 0)]
         [string]$TenantID,
         [Parameter(Position = 1)]
-        [ValidateSet('Admin II', 'Inventory Manager', 'Report Manager', 'Self Service', 'Service Desk Analyst')]
+        [ValidateSet('Admin','Admin II', 'Inventory Manager', 'Report Manager', 'Self Service', 'Service Desk Analyst')]
         [string]$Role,
         [Parameter(Position = 2)]
-        [pscredential]$Credential
+        [pscredential]$Credential,
+        [Parameter()]
+        [switch]
+        $NoSSL
     )
 
     # validate all our parameters are either provided or cached
@@ -83,8 +93,18 @@ function Connect-HEATProxy {
         }
 
     }
-
-    $webProxyUri = "https://$TenantID/ServiceAPI/FRSHEATIntegration.asmx?wsdl"
+    if (-not $NoSSL) {
+        if ($script:HEATCONNECTION.NoSSL) {
+            $NoSSL = $true
+        } else {
+            $NoSSL = $false
+        }
+    }
+    if ($NoSSL) {
+        $webProxyUri = "http://$TenantID/HEAT/ServiceAPI/FRSHEATIntegration.asmx?wsdl"  # Kreloc needed /HEAT/ in his environment, not sure how true that is for other on prem.
+    } else {
+        $webProxyUri = "https://$TenantID/ServiceAPI/FRSHEATIntegration.asmx?wsdl"        
+    }    
 
     # this just creates the proxy object we'll call, it does NOT connect to the service!
     $script:HEATPROXY = New-WebServiceProxy -Uri $webProxyUri -Namespace "WebServiceProxy" -Class "HEAT"
@@ -113,6 +133,8 @@ function Connect-HEATProxy {
     $script:HEATCONNECTION | Add-Member -NotePropertyName 'tenantId' -NotePropertyValue $TenantID
     # add the role to the connection proxy so we can easily reference it to renew when session expires
     $script:HEATCONNECTION | Add-Member -NotePropertyName 'role'     -NotePropertyValue $Role
+    # add if NoSSL was used
+    $script:HEATCONNECTION | Add-Member -NotePropertyName 'NoSSL' -NotePropertyValue $NoSSL
 
     Write-Verbose -Message "connection to $webProxyUri succeeded"
 

@@ -84,7 +84,13 @@ function Get-HEATSchemaForObject {
             System.Web.Services.Protocols.SoapException: Server was unable to process request. ---> System.Exception:
             Object not found' if you provided an invalid object type (not specified in GetAllAllowedObjectNames)
         #>
-        $response
+        <#
+            This response if it is xml really should be cast into xml in PowerShell as it is an object that can be navigated
+            opposed to the raw text of the xml.
+        #>
+        # $response
+            [xml]$response
+
 
     }
 
