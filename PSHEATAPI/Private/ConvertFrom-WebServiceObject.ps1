@@ -1,0 +1,59 @@
+<#
+    .SYNOPSIS
+    Converts the HEAT response into a PSCustomObject.
+    .DESCRIPTION
+    HEAT returns [FRSHEATIntegrationFindBOResponse] with an 'obj' property of type [WebServiceBusinessObject] that
+    contains FieldValues with Name, Value pairs. This does not cast easily to PSCustomObject, so this function simply
+    unwraps the FieldValues and rewraps them into a dictionary which can be passed to -Property when creating a new
+    PSCustomObject which is then returned in the pipeline.
+    .PARAMETER InputObject
+    The [WebServiceBusinessObject] from the response of a HEAT API request. Usually your $response.obj (from a
+    single query) or $response.objList (from a multiple query) piped in.
+    .PARAMETER AdditionalProperties
+    A hashtable containing additional properties to be appended to the resultant [PSCustomObject]. Most useful for
+    passing the 'boType' along with an object as this can become ambiguous during queries.
+    .EXAMPLE
+    PS C:\>ConvertFrom-WebServiceObject -InputObject $response.obj
+
+    Converts the $response.obj.FieldValues of a Get-HEATBusinessObject API request into a PSCustomObject.
+    .NOTES
+    Is there a better way to do this? I still feel like this is slightly clumsy.
+#>
+function ConvertFrom-WebServiceObject {
+    [CmdletBinding()]
+    [OutputType([PSCustomObject])]
+    param (
+        [Parameter(Mandatory,
+            ValueFromPipeline,
+            Position = 0)]
+        $InputObject,
+        [Parameter(Position = 1)]
+        [hashtable]$AdditionalProperties
+    )
+
+    begin { }
+
+    process {
+
+        # instantiate an empty dictionary (or one seeded with -AdditionalProperties)
+        if ($AdditionalProperties) {
+
+            $objectProperties = $AdditionalProperties
+
+        } else {
+
+            $objectProperties = @{}
+
+        }
+
+        # unwrap the FieldValues and add them to the $objectProperties dictionary
+        $InputObject.FieldValues | ForEach-Object -Process {$objectProperties.Add($_.Name, $_.Value)}
+
+        # create a new PSCustomObject with the freshly wrapped properties drop it into the pipeline
+        New-Object PSCustomObject -Property $objectProperties
+
+    }
+
+    end { }
+
+}

@@ -1,0 +1,6 @@
+# ignore cached credentials, don't want to store them in git
+cachedCredentials
+# ignore our personalized config, leave the sample
+config.json
+# ignore my personalized test file
+TestHEATAPI.ps1
