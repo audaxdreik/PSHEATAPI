@@ -19,8 +19,10 @@
 
     Return all the attachments associated with Service Request #91862.
     .NOTES
-    [System.IO.File]::WriteAllBytes('C:\TEMP\outfile.txt', $attachment)
-    test.txt > '248E075B5A4C4C6B8FFE9537DA47F773'
+    ReadAttachment(string sessionKey, string tenantId, ObjectAttachmentCommandData commandData)
+
+    Writing bytes to file,
+    [System.IO.File]::WriteAllBytes("C:\TEMP\$($attachment.name)", $attachment.content)
 #>
 function Get-HEATAttachmentData {
     [CmdletBinding()]
@@ -44,11 +46,15 @@ function Get-HEATAttachmentData {
 
         if ($Type) {
 
-            $records = (Get-HEATMultipleBusinessObjects -Value $RecordID -Type 'Attachment#' -Field 'ParentLink_RecID').RecId
+            <#
+                $Type is not actually consumed in any meaningful way, it just indicates that another business object
+                was piped in or that the user is specifying any type other than 'Attachment#' for a parent
+            #>
+            $records = Get-HEATMultipleBusinessObjects -Value $RecordID -Type 'Attachment#' -Field 'ParentLink_RecID'
 
         } else {
 
-            $records = $RecordID
+            $records = Get-HEATBusinessObject -Type 'Attachment#' -RecordID $RecordID
 
         }
 
@@ -57,7 +63,7 @@ function Get-HEATAttachmentData {
             # wrap the requested record id in an [ObjectAttachmentCommandData] object
             $commandData = New-Object -TypeName WebServiceProxy.ObjectAttachmentCommandData
 
-            $commandData.ObjectId = $record
+            $commandData.ObjectId = $record.RecId
 
             # define the API call
             $apiCall = {
@@ -87,7 +93,11 @@ function Get-HEATAttachmentData {
             if ($response.Status -like 'Success') {
 
                 # drop attachment data of this particular record into the pipeline to be collected in $attachments
-                , ($response.attachmentData)
+                New-Object -TypeName PSCustomObject -Property @{
+                    name    = $record.ATTACHNAME;
+                    RecID   = $record.RecId;
+                    content = $response.attachmentData
+                }
 
             } else {
 
