@@ -18,16 +18,21 @@ $private = @(Get-ChildItem -Path "$PSScriptRoot\Private" -Filter '*.ps1' -Recurs
 Export-ModuleMember -Function $public.BaseName
 
 # automatically connect to the service when the module is loaded
-try {
-
-    $config = Get-Content -Path $PSScriptRoot\data\config.json | ConvertFrom-Json
-
-    $credentials = [pscredential](Import-Clixml -Path "$PSScriptRoot\data\cachedCredentials")
-
-    Connect-HEATProxy -TenantID $config.tenantId -Role $config.defaultRole -Credential $credentials | Out-Null
-
-} catch {
-
-    Write-Warning -Message 'unable to initiate web service proxy connection, check cached credentials or manually rerun Connect-HEATProxy'
-
+# Wrapped around Test-Path for config.json and cachedCredentials otherwise Module displays error on load.
+if ((Test-Path $PSScriptRoot\data\config.json) -and (Test-Path $PSScriptRoot\data\cachedCredentials)) {
+    try {
+        
+            $config = Get-Content -Path $PSScriptRoot\data\config.json | ConvertFrom-Json
+        
+            $credentials = [pscredential](Import-Clixml -Path "$PSScriptRoot\data\cachedCredentials")
+        
+            Connect-HEATProxy -TenantID $config.tenantId -Role $config.defaultRole -Credential $credentials | Out-Null
+        
+        } catch {
+        
+            Write-Warning -Message 'Unable to initiate web service proxy connection, check cached credentials or manually rerun Connect-HEATProxy.'
+        
+        }    
+} else {
+    Write-Warning -Message 'Please manually run Connect-HEATProxy or set the config.json file and run Set-CachedCredentials.'
 }
