@@ -1,3 +1,7 @@
+# Ivanti HEAT PowerShell API
+
+1.0 release coming very soon!
+
 # Introduction
 [HEAT Admin Help](https://<YOUR_TENANT_ID>/help/admin/index.html)
 
