@@ -51,12 +51,12 @@ function Get-HEATIncident {
 
                 'Change#' {
 
-                    throw 'sorry, Change# link not implemented yet'
+                    (Find-HEATBusinessObject -SelectAll -From 'Change#' -Where @{Field = 'ChangeNumber'; Value = $Value.ChangeNumber; Condition = '='} -Link @{Relation = 'IncidentAssociatesChange'; Object = 'Incident#'}).linkedQueryObjects
 
                 }
                 'CI#' {
 
-                    throw 'sorry, CI# link not implemented yet'
+                    (Find-HEATBusinessObject -SelectAll -From 'CI#' -Where @{Field = 'Name'; Value = $Value.Name; Condition = '='} -Link @{Relation = 'IncidentAssociatesCI'; Object = 'Incident#'}).linkedQueryObjects
 
                 }
                 'Employee#' {

@@ -10,7 +10,11 @@
     .PARAMETER Type
     The type of business object (boType) to create.
     .PARAMETER Data
-    A hash of name/value pairs to populate the business object with.
+    A hashtable containing the Name/Value pairs for the fields you want to initialize on the specified record, i.e.
+    @{Name = 'FirstName'; Value = 'John'}
+    .PARAMETER Link
+    An optional array of LinkEntry class or hashtables containing the Action/Relation/RelatedObjectType
+    /RelatedObjectId values to link the created record with other business objects.
     .EXAMPLE
     PS C:\>New-HEATBusinessObject -Type 'CI#Workstation' -Data $data
 
@@ -21,27 +25,51 @@
 #>
 function New-HEATBusinessObject {
     [CmdletBinding()]
-    [OutputType(PSCustomObject)]
+    [OutputType([PSCustomObject])]
     param (
         [Parameter(Mandatory,
             Position = 0,
             HelpMessage = 'the boType of the record that will be created')]
+        [ValidatePattern('.*#')]
         [string]$Type,
         [Parameter(Mandatory,
             Position = 1,
             HelpMessage = 'hash of name/value pairs for the fields/values to initially populate')]
-        [hashtable]$Data
+        $Data,
+        [Parameter(Position = 2,
+            HelpMessage = 'optional LinkEntry to other business objects')]
+        $Link
     )
 
     $commandData = New-Object -TypeName WebServiceProxy.ObjectCommandData
 
     # ObjectId (the RecId) can be ommitted in this, unique one will be assigned automatically on successful creation
     $commandData.ObjectType = $Type
-    $commandData.Fields     = foreach ($key in $Data.Keys) {
-        New-Object -TypeName WebServiceProxy.ObjectCommandDataFieldValue -Property @{
-            'Name'  = $key;
-            'Value' = $Data[$key]
+
+    # attach the field data we want to initialize to the commandData
+    try {
+
+        $commandData.Fields = [WebServiceProxy.ObjectCommandDataFieldValue[]]$Data
+
+    } catch {
+
+        throw $_
+
+    }
+
+    # append optional links to other business objects if defined in -Link parameter
+    if ($Link) {
+
+        try {
+
+            $commandData.LinkToExistent = [WebServiceProxy.LinkEntry[]]$Link
+
+        } catch {
+
+            throw $_
+
         }
+
     }
 
     # define the API call

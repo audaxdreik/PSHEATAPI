@@ -43,12 +43,12 @@ function Get-HEATProblem {
 
                 'Change#' {
 
-                    throw 'sorry, Change# link not implemented yet'
+                    (Find-HEATBusinessObject -SelectAll -From 'Change#' -Where @{Field = 'ChangeNumber'; Value = $Value.ChangeNumber; Condition = '='} -Link @{Relation = 'ProblemAssociatesChange'; Object = 'Problem#'}).linkedQueryObjects
 
                 }
                 'CI#' {
 
-                    throw 'sorry, CI# link not implemented yet'
+                    (Find-HEATBusinessObject -SelectAll -From 'CI#' -Where @{Field = 'Name'; Value = $Value.Name; Condition = '='} -Link @{Relation = 'CIAssociatesProblem'; Object = 'Problem#'}).linkedQueryObjects
 
                 }
                 default {

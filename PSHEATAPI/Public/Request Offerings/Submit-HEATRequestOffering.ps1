@@ -30,6 +30,7 @@
 #>
 function Submit-HEATRequestOffering {
     [CmdletBinding()]
+    [OutputType([WebServiceProxy.FRSHEATServiceReqRequest])]
     param (
         [Parameter(Mandatory,
             ValueFromPipelineByPropertyName,

@@ -16,8 +16,7 @@ fields["Urgency"]                   = "Medium";
 fields["CABVoteExpirationDateTime"] = "2013-03-26 18:38:30";
 
 foreach (string key in fields.Keys) {
-    dataFields.Add(new ObjectCommandDataFieldValue()
-    {
+    dataFields.Add(new ObjectCommandDataFieldValue() {
         Name = key,
         Value = fields[key].ToString()
     });
@@ -51,8 +50,8 @@ ciQuery.Where = new RuleClass[] {
     // Here, we will search for the CI.Computer by its Name
     new RuleClass() {
         Condition = "=",
-        Field = "Name",
-        Value = "APAC-DEPOT-SERV01"
+        Field     = "Name",
+        Value     = "APAC-DEPOT-SERV01"
     }
 };
 

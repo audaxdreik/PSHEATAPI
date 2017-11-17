@@ -26,7 +26,6 @@
 
     Opens a connection to 'my.tenant.id', under the 'Service Desk Analyst' role using the credentials provided from
     the Get-Credential pop-up window.
-
     .EXAMPLE
     Connect-HEATProxy -TenantID "HDSRV01" -Role 'Admin' -Credential (Get-Credential) -NoSSL
 
@@ -42,7 +41,7 @@ function Connect-HEATProxy {
         [Parameter(Position = 0)]
         [string]$TenantID,
         [Parameter(Position = 1)]
-        [ValidateSet('Admin','Admin II', 'Inventory Manager', 'Report Manager', 'Self Service', 'Service Desk Analyst')]
+        [ValidateSet('Admin', 'Admin II', 'Inventory Manager', 'Report Manager', 'Self Service', 'Service Desk Analyst')]
         [string]$Role,
         [Parameter(Position = 2)]
         [pscredential]$Credential,
@@ -93,18 +92,30 @@ function Connect-HEATProxy {
         }
 
     }
+
     if (-not $NoSSL) {
+
         if ($script:HEATCONNECTION.NoSSL) {
+
             $NoSSL = $true
+
         } else {
+
             $NoSSL = $false
+
         }
+
     }
+
     if ($NoSSL) {
+
         $webProxyUri = "http://$TenantID/HEAT/ServiceAPI/FRSHEATIntegration.asmx?wsdl"  # Kreloc needed /HEAT/ in his environment, not sure how true that is for other on prem.
+
     } else {
-        $webProxyUri = "https://$TenantID/ServiceAPI/FRSHEATIntegration.asmx?wsdl"        
-    }    
+
+        $webProxyUri = "https://$TenantID/ServiceAPI/FRSHEATIntegration.asmx?wsdl"
+
+    }
 
     # this just creates the proxy object we'll call, it does NOT connect to the service!
     $script:HEATPROXY = New-WebServiceProxy -Uri $webProxyUri -Namespace "WebServiceProxy" -Class "HEAT"

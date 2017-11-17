@@ -22,6 +22,7 @@
 #>
 function Get-HEATRequestOfferingSubscriptionData {
     [CmdletBinding()]
+    [OutputType([WebServiceProxy.FRSHEATServiceReqSubscription])]
     param (
         [Parameter(Mandatory,
             Position = 0,

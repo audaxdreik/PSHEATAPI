@@ -26,7 +26,7 @@ function ConvertFrom-WebServiceObject {
         [Parameter(Mandatory,
             ValueFromPipeline,
             Position = 0)]
-        $InputObject,
+        [WebServiceProxy.WebServiceBusinessObject]$InputObject,
         [Parameter(Position = 1)]
         [hashtable]$AdditionalProperties
     )
@@ -49,8 +49,14 @@ function ConvertFrom-WebServiceObject {
         # unwrap the FieldValues and add them to the $objectProperties dictionary
         $InputObject.FieldValues | ForEach-Object -Process {$objectProperties.Add($_.Name, $_.Value)}
 
-        # create a new PSCustomObject with the freshly wrapped properties drop it into the pipeline
-        New-Object PSCustomObject -Property $objectProperties
+        # create a new PSCustomObject with the freshly wrapped properties
+        $businessObject = New-Object PSCustomObject -Property $objectProperties
+
+        # set the actual TypeName of the object so it is properly identified for our format file
+        $businessObject.psobject.TypeNames.Insert(0, $businessObject.boType)
+
+        # drop the object into the pipeline
+        $businessObject
 
     }
 

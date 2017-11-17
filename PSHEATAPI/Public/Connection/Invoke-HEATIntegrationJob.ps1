@@ -8,17 +8,15 @@
     .PARAMETER Name
     The name of the integration job.
     .EXAMPLE
-    PS C:\>Invoke-HEATIntegrationJob -Name $name
+    PS C:\>Invoke-HEATIntegrationJob -Name 'ADGroups'
 
-    This is a theoretical example, usage is unspecified at this time.
+    Add the 'ADGroups' integration job to the Integration Queue.
     .NOTES
     IntegrationScheduleNow(string sessionKey, string tenantId, string integrationName)
-
-    I'm not really sure what this does or how to use it, so it's not well tested but the implementation seems
-    pretty obvious from the documentation.
 #>
 function Invoke-HEATIntegrationJob {
     [CmdletBinding()]
+    [OutputType([string])]
     param (
         [Parameter(Mandatory,
             ValueFromPipeline,

@@ -52,7 +52,7 @@ function Get-HEATCI {
 
                 'Change#' {
 
-                    throw 'sorry, Change# link not implemented yet'
+                    (Find-HEATBusinessObject -SelectAll -From 'Change#' -Where @{Field = 'ChangeNumber'; Value = $Value.ChangeNumber; Condition = '='} -Link @{Relation = 'ChangeAssociatedCI'; Object = 'CI#'}).linkedQueryObjects
 
                 }
                 'Employee#' {
@@ -62,12 +62,12 @@ function Get-HEATCI {
                 }
                 'Incident#' {
 
-                    throw 'sorry, Incident# link not implemented yet'
+                    (Find-HEATBusinessObject -SelectAll -From 'Incident#' -Where @{Field = 'IncidentNumber'; Value = $Value.IncidentNumber; Condition = '='} -Link @{Relation = 'IncidentAssociatesCI'; Object = 'CI#'}).linkedQueryObjects
 
                 }
                 'Problem#' {
 
-                    throw 'sorry, Problem# link not implemented yet'
+                    (Find-HEATBusinessObject -SelectAll -From 'Problem#' -Where @{Field = 'ProblemNumber'; Value = $Value.ProblemNumber; Condition = '='} -Link @{Relation = 'CIAssociatesProblem'; Object = 'CI#'}).linkedQueryObjects
 
                 }
                 default {

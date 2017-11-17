@@ -31,6 +31,7 @@ function Get-HEATMultipleBusinessObjects {
         [Parameter(Mandatory,
             Position = 1,
             HelpMessage = 'an exact HEAT boType')]
+        [ValidatePattern('.*#')]
         [string]$Type,
         [Parameter(Mandatory,
             Position = 2,
@@ -73,7 +74,13 @@ function Get-HEATMultipleBusinessObjects {
 
             # convert the $response.obj.FieldValues into a PSCustomObject and drop it into the pipeline
             $response.objList | ForEach-Object -Process {
-                ConvertFrom-WebServiceObject -InputObject $_ -AdditionalProperties @{ boType = $Type }
+                <#
+                    each element of objList is actually [WebServiceProxy.WebServiceBusinessObject[]] due to the
+                    possibility of nested joins that aren't entirely clear to me that would result in this particular
+                    API call. for this reason $_[0] is passed instead of just $_ though this may cause unintended
+                    results that may need to be addressed in the future
+                #>
+                ConvertFrom-WebServiceObject -InputObject $_[0] -AdditionalProperties @{ boType = $Type }
             }
 
         } else {

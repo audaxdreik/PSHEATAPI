@@ -1,0 +1,18 @@
+PSTOPIC
+    about_PSHEATAPI
+
+SHORT DESCRIPTION
+    PSHEATAPI allows you to work with the Ivanti HEAT SOAP webservice API through PowerShell functions.
+
+LONG DESCRIPTION
+    PSHEATAPI allows you to work with the Ivanti HEAT SOAP webservice API through PowerShell functions.
+
+    You can find API documentation here:
+        https://help.ivanti.com/ht/help/en_US/ISM/2017/Content/Configure/Develop/Web%20Service.htm
+
+DETAILED DESCRIPTION
+    This API complete module allows the reading and writing of Ivanti HEAT business objects in a PowerShell consistent manner.
+
+    Business objects can be retrieved with the simplified Get wrappers and piped into Set or Remove functions. New business objects can be created with New-HEATBusinessObject
+
+    Get wrapper functions are likely to change from one organization's implementation to another, so it is recommended you use the provided wrapper functions as an example to build your own to match the naming and property conventions.

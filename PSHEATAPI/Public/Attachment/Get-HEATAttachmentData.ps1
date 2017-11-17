@@ -2,10 +2,10 @@
     .SYNOPSIS
     Reads the data of a specific attachment record.
     .DESCRIPTION
-    Given a RecordID it will return the byte[] for the attachment data. Given a RecordID and Type (boType) it will
-    attempt to read all the attachments associated with that record.
+    Given a RecordID it will return a PSCustomObject with the name, RecId, and byte[] content of an attachment. Given a
+    RecordID and Type (boType) it will attempt to read all the attachments associated with that record.
 
-    If you are only looking to retrieve the business object record, please use Get-HEATAttachment instead.
+    If you are only looking to retrieve the business object record, please use Get-HEATBusinessObject instead.
     .PARAMETER RecordID
     The RecID of a specific attachment, or when paired with Type, a business object containing a(n) attachment(s).
     .PARAMETER Type
@@ -26,6 +26,7 @@
 #>
 function Get-HEATAttachmentData {
     [CmdletBinding()]
+    [OutputType([PSCustomObject])]
     param (
         [Parameter(Mandatory,
             ValueFromPipelineByPropertyName,
@@ -37,6 +38,7 @@ function Get-HEATAttachmentData {
             Position = 1,
             HelpMessage = 'the boType of the record that will be updated')]
         [Alias('boType')]
+        [ValidatePattern('.*#')]
         [string]$Type
     )
 

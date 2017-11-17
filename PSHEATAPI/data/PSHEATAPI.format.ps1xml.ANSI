@@ -1,0 +1,567 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<Configuration>
+
+    <SelectionSets>
+
+        <SelectionSet>
+            <Name>CI</Name>
+            <Types>
+                <TypeName>CI#</TypeName>
+                <TypeName>CI#AccessPoint</TypeName>
+                <TypeName>CI#BatchJob</TypeName>
+                <TypeName>CI#Cluster</TypeName>
+                <TypeName>CI#Computer</TypeName>
+                <TypeName>CI#Contract</TypeName>
+                <TypeName>CI#Database</TypeName>
+                <TypeName>CI#Document</TypeName>
+                <TypeName>CI#EnterpriseApplication</TypeName>
+                <TypeName>CI#ESX</TypeName>
+                <TypeName>CI#FAX</TypeName>
+                <TypeName>CI#Firewall</TypeName>
+                <TypeName>CI#Generator</TypeName>
+                <TypeName>CI#Hub</TypeName>
+                <TypeName>CI#Middleware</TypeName>
+                <TypeName>CI#MobileDevice</TypeName>
+                <TypeName>CI#Monitor</TypeName>
+                <TypeName>CI#PeripheralDevice</TypeName>
+                <TypeName>CI#Phone</TypeName>
+                <TypeName>CI#Printer</TypeName>
+                <TypeName>CI#ProductivityApp</TypeName>
+                <TypeName>CI#Rack</TypeName>
+                <TypeName>CI#Router</TypeName>
+                <TypeName>CI#SAN</TypeName>
+                <TypeName>CI#Scanner</TypeName>
+                <TypeName>CI#Server</TypeName>
+                <TypeName>CI#Service</TypeName>
+                <TypeName>CI#Switch</TypeName>
+                <TypeName>CI#System</TypeName>
+                <TypeName>CI#UnknownDevice</TypeName>
+                <TypeName>CI#UPS</TypeName>
+                <TypeName>CI#VideoConference</TypeName>
+                <TypeName>CI#VirtualServer</TypeName>
+                <TypeName>CI#VirtualWorkstation</TypeName>
+                <TypeName>CI#VOIP</TypeName>
+                <TypeName>CI#Workstation</TypeName>
+            </Types>
+        </SelectionSet>
+
+    </SelectionSets>
+
+    <ViewDefinitions>
+
+        <View>
+            <Name>Approval</Name>
+            <ViewSelectedBy>
+                <TypeName>FRS_Approval#</TypeName>
+            </ViewSelectedBy>
+            <ListControl>
+                <ListEntries>
+                    <ListEntry>
+                        <ListItems>
+                            <ListItem>
+                                <PropertyName>Name</PropertyName>
+                            </ListItem>
+                            <ListItem>
+                                <PropertyName>ParentID</PropertyName>
+                            </ListItem>
+                            <ListItem>
+                                <Label>ParentCategory</Label>
+                                <PropertyName>ParentLink_Category</PropertyName>
+                            </ListItem>
+                            <ListItem>
+                                <PropertyName>RecId</PropertyName>
+                            </ListItem>
+                            <ListItem>
+                                <Label>Status</Label>
+                                <ScriptBlock>
+                                    switch ($_.Status) {
+                                        'Approved'  { "$([char](0x1B))[38;5;10mApproved$([char](0x1B))[0m" }
+                                        'Cancelled' { "$([char](0x1B))[38;5;1mCancelled$([char](0x1B))[0m" }
+                                        'Denied'    { "$([char](0x1B))[38;5;15m$([char](0x1B))[48;5;9mDenied$([char](0x1B))[0m" }
+                                        'Pending'   { "$([char](0x1B))[38;5;12mPending$([char](0x1B))[0m" }
+                                        default     { $_ }
+                                    }
+                                </ScriptBlock>
+                            </ListItem>
+                            <ListItem>
+                                <Label>Votes</Label>
+                                <ScriptBlock>
+                                    $votes = foreach ($vote in $_.FRS_ApprovalVoteTracking) {
+                                        @($vote.OwnerFullName, $vote.Status)
+                                    }
+                                    $votes
+                                </ScriptBlock>
+                            </ListItem>
+                        </ListItems>
+                    </ListEntry>
+                </ListEntries>
+            </ListControl>
+        </View>
+
+        <View>
+            <Name>ApprovalVoteTracking</Name>
+            <ViewSelectedBy>
+                <TypeName>FRS_ApprovalVoteTracking#</TypeName>
+            </ViewSelectedBy>
+            <ListControl>
+                <ListEntries>
+                    <ListEntry>
+                        <ListItems>
+                            <ListItem>
+                                <PropertyName>PrimaryParentID</PropertyName>
+                            </ListItem>
+                            <ListItem>
+                                <Label>ParentCategory</Label>
+                                <PropertyName>PrimaryParentCategory</PropertyName>
+                            </ListItem>
+                            <ListItem>
+                                <PropertyName>RecId</PropertyName>
+                            </ListItem>
+                            <ListItem>
+                                <Label>Status</Label>
+                                <ScriptBlock>
+                                    switch ($_.Status) {
+                                        'Approved'  { "$([char](0x1B))[38;5;10mApproved$([char](0x1B))[0m" }
+                                        'Cancelled' { "$([char](0x1B))[38;5;1mCancelled$([char](0x1B))[0m" }
+                                        'Denied'    { "$([char](0x1B))[38;5;15m$([char](0x1B))[48;5;9mDenied$([char](0x1B))[0m" }
+                                        'Pending'   { "$([char](0x1B))[38;5;12mPending$([char](0x1B))[0m" }
+                                        default     { $_ }
+                                    }
+                                </ScriptBlock>
+                            </ListItem>
+                            <ListItem>
+                                <PropertyName>OwnerFullName</PropertyName>
+                            </ListItem>
+                        </ListItems>
+                    </ListEntry>
+                </ListEntries>
+            </ListControl>
+        </View>
+
+        <View>
+            <Name>Change</Name>
+            <ViewSelectedBy>
+                <TypeName>Change#</TypeName>
+            </ViewSelectedBy>
+            <ListControl>
+                <ListEntries>
+                    <ListEntry>
+                        <ListItems>
+                            <ListItem>
+                                <PropertyName>Subject</PropertyName>
+                            </ListItem>
+                            <ListItem>
+                                <PropertyName>ChangeNumber</PropertyName>
+                            </ListItem>
+                            <ListItem>
+                                <PropertyName>RecId</PropertyName>
+                            </ListItem>
+                            <ListItem>
+                                <Label>Status</Label>
+                                <ScriptBlock>
+                                    switch ($_.Status) {
+                                        'Implemented'      { "$([char](0x1B))[38;5;10mImplemented$([char](0x1B))[0m" }
+                                        'Scheduled'        { "$([char](0x1B))[38;5;14mScheduled$([char](0x1B))[0m" }
+                                        'Pending Approval' { "$([char](0x1B))[38;5;12mPending Approval$([char](0x1B))[0m" }
+                                        'Cancelled'        { "$([char](0x1B))[38;5;1mCancelled$([char](0x1B))[0m" }
+                                        'Denied'           { "$([char](0x1B))[38;5;15m$([char](0x1B))[48;5;9mDenied$([char](0x1B))[0m" }
+                                        'Failed'           { "$([char](0x1B))[38;5;9mFailed$([char](0x1B))[0m" }
+                                        default            { $_ }
+                                    }
+                                </ScriptBlock>
+                            </ListItem>
+                            <ListItem>
+                                <PropertyName>Urgency</PropertyName>
+                            </ListItem>
+                            <ListItem>
+                                <Label>Priority</Label>
+                                <ScriptBlock>
+                                    switch ($_.Priority) {
+                                        '5'     { "$([char](0x1B))[38;5;13m5$([char](0x1B))[0m" }
+                                        '4'     { "$([char](0x1B))[38;5;14m4$([char](0x1B))[0m" }
+                                        '3'     { "$([char](0x1B))[38;5;208m3$([char](0x1B))[0m" }
+                                        '2'     { "$([char](0x1B))[38;5;11m2$([char](0x1B))[0m" }
+                                        '1'     { "$([char](0x1B))[38;5;9m1$([char](0x1B))[0m" }
+                                        default { $_ }
+                                    }
+                                </ScriptBlock>
+                            </ListItem>
+                            <ListItem>
+                                <PropertyName>Impact</PropertyName>
+                            </ListItem>
+                            <ListItem>
+                                <PropertyName>TypeOfChange</PropertyName>
+                            </ListItem>
+                            <ListItem>
+                                <PropertyName>CreatedBy</PropertyName>
+                            </ListItem>
+                            <ListItem>
+                                <PropertyName>RequestedBy</PropertyName>
+                            </ListItem>
+                            <ListItem>
+                                <PropertyName>Owner</PropertyName>
+                            </ListItem>
+                            <ListItem>
+                                <PropertyName>OwnerTeam</PropertyName>
+                            </ListItem>
+                            <ListItem>
+                                <Label>TimeFrame</Label>
+                                <ScriptBlock>
+                                    "$($_.ScheduledStartDate) ~ $($_.ScheduledEndDate)"
+                                </ScriptBlock>
+                            </ListItem>
+                        </ListItems>
+                    </ListEntry>
+                </ListEntries>
+            </ListControl>
+        </View>
+
+        <View>
+            <Name>CI</Name>
+            <ViewSelectedBy>
+                <SelectionSetName>CI</SelectionSetName>
+            </ViewSelectedBy>
+            <ListControl>
+                <ListEntries>
+                    <ListEntry>
+                        <ListItems>
+                            <ListItem>
+                                <PropertyName>Name</PropertyName>
+                            </ListItem>
+                            <ListItem>
+                                <PropertyName>RecId</PropertyName>
+                            </ListItem>
+                            <ListItem>
+                                <PropertyName>CIType</PropertyName>
+                            </ListItem>
+                            <ListItem>
+                                <PropertyName>Status</PropertyName>
+                            </ListItem>
+                            <ListItem>
+                                <PropertyName>Owner</PropertyName>
+                            </ListItem>
+                            <ListItem>
+                                <PropertyName>LoginName</PropertyName>
+                            </ListItem>
+                            <ListItem>
+                                <PropertyName>Model</PropertyName>
+                            </ListItem>
+                            <ListItem>
+                                <PropertyName>CPUArchitecture</PropertyName>
+                            </ListItem>
+                            <ListItem>
+                                <PropertyName>TotalMemory</PropertyName>
+                            </ListItem>
+                            <ListItem>
+                                <PropertyName>OperatingSystem</PropertyName>
+                            </ListItem>
+                            <ListItem>
+                                <PropertyName>SerialNumber</PropertyName>
+                            </ListItem>
+                            <ListItem>
+                                <PropertyName>AssetTag</PropertyName>
+                            </ListItem>
+                            <ListItem>
+                                <PropertyName>ServiceTag</PropertyName>
+                            </ListItem>
+                        </ListItems>
+                    </ListEntry>
+                </ListEntries>
+            </ListControl>
+        </View>
+
+        <View>
+            <Name>Employee</Name>
+            <ViewSelectedBy>
+                <TypeName>Employee#</TypeName>
+            </ViewSelectedBy>
+            <ListControl>
+                <ListEntries>
+                    <ListEntry>
+                        <ListItems>
+                            <ListItem>
+                                <PropertyName>DisplayName</PropertyName>
+                            </ListItem>
+                            <ListItem>
+                                <PropertyName>NetworkUserName</PropertyName>
+                            </ListItem>
+                            <ListItem>
+                                <PropertyName>PrimaryEmail</PropertyName>
+                            </ListItem>
+                            <ListItem>
+                                <PropertyName>Department</PropertyName>
+                            </ListItem>
+                            <ListItem>
+                                <PropertyName>Title</PropertyName>
+                            </ListItem>
+                            <ListItem>
+                                <PropertyName>Team</PropertyName>
+                            </ListItem>
+                            <ListItem>
+                                <PropertyName>Status</PropertyName>
+                            </ListItem>
+                        </ListItems>
+                    </ListEntry>
+                </ListEntries>
+            </ListControl>
+        </View>
+
+        <View>
+            <Name>Incident</Name>
+            <ViewSelectedBy>
+                <TypeName>Incident#</TypeName>
+            </ViewSelectedBy>
+            <ListControl>
+                <ListEntries>
+                    <ListEntry>
+                        <ListItems>
+                            <ListItem>
+                                <PropertyName>Subject</PropertyName>
+                            </ListItem>
+                            <ListItem>
+                                <PropertyName>IncidentNumber</PropertyName>
+                            </ListItem>
+                            <ListItem>
+                                <PropertyName>RecId</PropertyName>
+                            </ListItem>
+                            <ListItem>
+                                <Label>Status</Label>
+                                <ScriptBlock>
+                                    switch -regex ($_.Status) {
+                                        'Closed'   { "$([char](0x1B))[38;5;2mClosed$([char](0x1B))[0m" }
+                                        'Resolved' { "$([char](0x1B))[38;5;10mResolved$([char](0x1B))[0m" }
+                                        'Active'   { "$([char](0x1B))[38;5;12mActive$([char](0x1B))[0m" }
+                                        'Waiting'  { "$([char](0x1B))[38;5;13m$_$([char](0x1B))[0m" }
+                                        default    { $_ }
+                                    }
+                                </ScriptBlock>
+                            </ListItem>
+                            <ListItem>
+                                <PropertyName>Impact</PropertyName>
+                            </ListItem>
+                            <ListItem>
+                                <PropertyName>Urgency</PropertyName>
+                            </ListItem>
+                            <ListItem>
+                                <Label>Priority</Label>
+                                <ScriptBlock>
+                                    switch ($_.Priority) {
+                                        '5'     { "$([char](0x1B))[38;5;13m5$([char](0x1B))[0m" }
+                                        '4'     { "$([char](0x1B))[38;5;14m4$([char](0x1B))[0m" }
+                                        '3'     { "$([char](0x1B))[38;5;208m3$([char](0x1B))[0m" }
+                                        '2'     { "$([char](0x1B))[38;5;11m2$([char](0x1B))[0m" }
+                                        '1'     { "$([char](0x1B))[38;5;9m1$([char](0x1B))[0m" }
+                                        default { $_ }
+                                    }
+                                </ScriptBlock>
+                            </ListItem>
+                            <ListItem>
+                                <PropertyName>CreatedBy</PropertyName>
+                            </ListItem>
+                            <ListItem>
+                                <PropertyName>ProfileFullName</PropertyName>
+                            </ListItem>
+                            <ListItem>
+                                <PropertyName>Owner</PropertyName>
+                            </ListItem>
+                            <ListItem>
+                                <PropertyName>OwnerTeam</PropertyName>
+                            </ListItem>
+                            <ListItem>
+                                <PropertyName>HoursUntilBreach</PropertyName>
+                            </ListItem>
+                        </ListItems>
+                    </ListEntry>
+                </ListEntries>
+            </ListControl>
+        </View>
+
+        <View>
+            <Name>Problem</Name>
+            <ViewSelectedBy>
+                <TypeName>Problem#</TypeName>
+            </ViewSelectedBy>
+            <ListControl>
+                <ListEntries>
+                    <ListEntry>
+                        <ListItems>
+                            <ListItem>
+                                <PropertyName>Subject</PropertyName>
+                            </ListItem>
+                            <ListItem>
+                                <PropertyName>ProblemNumber</PropertyName>
+                            </ListItem>
+                            <ListItem>
+                                <PropertyName>RecId</PropertyName>
+                            </ListItem>
+                            <ListItem>
+                                <Label>Status</Label>
+                                <ScriptBlock>
+                                    switch -regex ($_.Status) {
+                                        'Closed'        { "$([char](0x1B))[38;5;2mClosed$([char](0x1B))[0m" }
+                                        'Resolved'      { "$([char](0x1B))[38;5;10mResolved$([char](0x1B))[0m" }
+                                        'Identified'    { "$([char](0x1B))[38;5;14mIdentified$([char](0x1B))[0m" }
+                                        'Active'        { "$([char](0x1B))[38;5;12mActive$([char](0x1B))[0m" }
+                                        'Investigation' { "$([char](0x1B))[38;5;11mInvestigation$([char](0x1B))[0m" }
+                                        'Cancelled'     { "$([char](0x1B))[38;5;1mCancelled$([char](0x1B))[0m" }
+                                        default         { $_ }
+                                    }
+                                </ScriptBlock>
+                            </ListItem>
+                            <ListItem>
+                                <PropertyName>Urgency</PropertyName>
+                            </ListItem>
+                            <ListItem>
+                                <Label>Priority</Label>
+                                <ScriptBlock>
+                                    switch ($_.Priority) {
+                                        '5'     { "$([char](0x1B))[38;5;13m5$([char](0x1B))[0m" }
+                                        '4'     { "$([char](0x1B))[38;5;14m4$([char](0x1B))[0m" }
+                                        '3'     { "$([char](0x1B))[38;5;208m3$([char](0x1B))[0m" }
+                                        '2'     { "$([char](0x1B))[38;5;11m2$([char](0x1B))[0m" }
+                                        '1'     { "$([char](0x1B))[38;5;9m1$([char](0x1B))[0m" }
+                                        default { $_ }
+                                    }
+                                </ScriptBlock>
+                            </ListItem>
+                            <ListItem>
+                                <PropertyName>Impact</PropertyName>
+                            </ListItem>
+                            <ListItem>
+                                <PropertyName>TypeOfProblem</PropertyName>
+                            </ListItem>
+                            <ListItem>
+                                <PropertyName>Category</PropertyName>
+                            </ListItem>
+                            <ListItem>
+                                <PropertyName>CreatedBy</PropertyName>
+                            </ListItem>
+                            <ListItem>
+                                <PropertyName>Owner</PropertyName>
+                            </ListItem>
+                            <ListItem>
+                                <PropertyName>OwnerTeam</PropertyName>
+                            </ListItem>
+                        </ListItems>
+                    </ListEntry>
+                </ListEntries>
+            </ListControl>
+        </View>
+
+        <View>
+            <Name>ServiceRequest</Name>
+            <ViewSelectedBy>
+                <TypeName>ServiceReq#</TypeName>
+            </ViewSelectedBy>
+            <ListControl>
+                <ListEntries>
+                    <ListEntry>
+                        <ListItems>
+                            <ListItem>
+                                <PropertyName>Subject</PropertyName>
+                            </ListItem>
+                            <ListItem>
+                                <PropertyName>ServiceReqNumber</PropertyName>
+                            </ListItem>
+                            <ListItem>
+                                <PropertyName>RecId</PropertyName>
+                            </ListItem>
+                            <ListItem>
+                                <Label>Status</Label>
+                                <ScriptBlock>
+                                    switch -regex ($_.Status) {
+                                        'Closed'            { "$([char](0x1B))[38;5;2mClosed$([char](0x1B))[0m" }
+                                        'Fulfilled'         { "$([char](0x1B))[38;5;10mFulfilled$([char](0x1B))[0m" }
+                                        'Active'            { "$([char](0x1B))[38;5;14mActive$([char](0x1B))[0m" }
+                                        'Waiting'           { "$([char](0x1B))[38;5;13m$_$([char](0x1B))[0m" }
+                                        'Approved'          { "$([char](0x1B))[38;5;14mApproved$([char](0x1B))[0m" }
+                                        'Pending Approval'  { "$([char](0x1B))[38;5;12mPending Approval$([char](0x1B))[0m" }
+                                        'Approval Rejected' { "$([char](0x1B))[38;5;15m$([char](0x1B))[48;5;9mApproval Rejected$([char](0x1B))[0m" }
+                                        'Cancelled'         { "$([char](0x1B))[38;5;1mCancelled$([char](0x1B))[0m" }
+                                        default             { $_ }
+                                    }
+                                </ScriptBlock>
+                            </ListItem>
+                            <ListItem>
+                                <PropertyName>Urgency</PropertyName>
+                            </ListItem>
+                            <ListItem>
+                                <PropertyName>CreatedBy</PropertyName>
+                            </ListItem>
+                            <ListItem>
+                                <PropertyName>ProfileFullName</PropertyName>
+                            </ListItem>
+                            <ListItem>
+                                <PropertyName>Owner</PropertyName>
+                            </ListItem>
+                            <ListItem>
+                                <PropertyName>OwnerTeam</PropertyName>
+                            </ListItem>
+                            <ListItem>
+                                <PropertyName>HoursUntilBreach</PropertyName>
+                            </ListItem>
+                        </ListItems>
+                    </ListEntry>
+                </ListEntries>
+            </ListControl>
+        </View>
+
+        <View>
+            <Name>Task</Name>
+            <ViewSelectedBy>
+                <TypeName>Task#</TypeName>
+            </ViewSelectedBy>
+            <ListControl>
+                <ListEntries>
+                    <ListEntry>
+                        <ListItems>
+                            <ListItem>
+                                <PropertyName>Subject</PropertyName>
+                            </ListItem>
+                            <ListItem>
+                                <PropertyName>AssignmentID</PropertyName>
+                            </ListItem>
+                            <ListItem>
+                                <PropertyName>RecId</PropertyName>
+                            </ListItem>
+                            <ListItem>
+                                <Label>Status</Label>
+                                <ScriptBlock>
+                                    switch -regex ($_.Status) {
+                                        'Completed' { "$([char](0x1B))[38;5;10mCompleted$([char](0x1B))[0m" }
+                                        'Accepted'  { "$([char](0x1B))[38;5;14mAccepted$([char](0x1B))[0m" }
+                                        'Assigned'  { "$([char](0x1B))[38;5;12mAssigned$([char](0x1B))[0m" }
+                                        'Waiting'   { "$([char](0x1B))[38;5;11mWaiting$([char](0x1B))[0m" }
+                                        'Rejected'  { "$([char](0x1B))[38;5;9mRejected$([char](0x1B))[0m" }
+                                        'Cancelled' { "$([char](0x1B))[38;5;1mCancelled$([char](0x1B))[0m" }
+                                        default     { $_ }
+                                    }
+                                </ScriptBlock>
+                            </ListItem>
+                            <ListItem>
+                                <PropertyName>Priority</PropertyName>
+                            </ListItem>
+                            <ListItem>
+                                <PropertyName>CreatedBy</PropertyName>
+                            </ListItem>
+                            <ListItem>
+                                <PropertyName>Owner</PropertyName>
+                            </ListItem>
+                            <ListItem>
+                                <PropertyName>OwnerTeam</PropertyName>
+                            </ListItem>
+                            <ListItem>
+                                <Label>ParentCategory</Label>
+                                <PropertyName>ParentLink_Category</PropertyName>
+                            </ListItem>
+                            <ListItem>
+                                <PropertyName>ParentObjectDisplayID</PropertyName>
+                            </ListItem>
+                        </ListItems>
+                    </ListEntry>
+                </ListEntries>
+            </ListControl>
+        </View>
+
+    </ViewDefinitions>
+</Configuration>

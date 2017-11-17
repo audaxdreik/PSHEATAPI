@@ -44,6 +44,7 @@ function Get-HEATBusinessObject {
         [Parameter(Mandatory,
             Position = 1,
             HelpMessage = 'an exact HEAT business object type (boType)')]
+        [ValidatePattern('.*#')]
         [string]$Type,
         [Parameter(Mandatory,
             Position = 2,

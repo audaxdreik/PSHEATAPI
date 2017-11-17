@@ -37,6 +37,7 @@ function Set-HEATAttachmentData {
             Position = 1,
             HelpMessage = 'the boType of the record that will be updated')]
         [Alias('boType')]
+        [ValidatePattern('.*#')]
         [string]$Type,
         [Parameter(Mandatory,
             Position = 2,

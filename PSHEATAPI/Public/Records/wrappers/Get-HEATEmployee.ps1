@@ -14,6 +14,7 @@
 #>
 function Get-HEATEmployee {
     [CmdletBinding()]
+    [OutputType([PSCustomObject])]
     param (
         [Parameter(Mandatory,
             ValueFromPipeline,
