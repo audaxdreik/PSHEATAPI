@@ -35,19 +35,13 @@ function ConvertFrom-WebServiceObject {
 
     process {
 
-        # instantiate an empty dictionary (or one seeded with -AdditionalProperties)
-        if ($AdditionalProperties) {
-
-            $objectProperties = $AdditionalProperties
-
-        } else {
-
-            $objectProperties = @{}
-
-        }
+        # instantiate an empty dictionary and add -AdditionalProperties if provided
+        $objectProperties = [ordered]@{} + $AdditionalProperties
 
         # unwrap the FieldValues and add them to the $objectProperties dictionary
-        $InputObject.FieldValues | ForEach-Object -Process {$objectProperties.Add($_.Name, $_.Value)}
+        $InputObject.FieldValues |
+            Sort-Object -Property Name |
+            ForEach-Object -Process {$objectProperties.Add($_.Name, $_.Value)}
 
         # create a new PSCustomObject with the freshly wrapped properties
         $businessObject = New-Object PSCustomObject -Property $objectProperties
