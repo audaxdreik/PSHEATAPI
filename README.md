@@ -127,6 +127,16 @@ $incidents = Find-HEATBusinessObject -Select @{Name = 'IncidentNumber'; Type = '
 Returns just the IncidentNumber for all Incidents which are currently Active and have an IncidentNumber greater than or equal to 100000, sorted in ascending order.
 
 ``` powershell
+# find all business objects of a given type
+$where = [WebServiceProxy.RuleClass]::New()
+$where.ConditionType = 'ByText'
+$where.Condtion      = '='
+$where.Value         = '' # empty string is important, do not leave $null
+$departments = Find-HEATBusinessObject -SelectAll -From 'Department#' -Where $where
+```
+A somewhat hack-ish way to use searching 'ByText' instead of the default 'ByField' in order to return all business objects of a given type. May try to implement this more directly in the future.
+
+``` powershell
 # find all business objects associated to a parent object through links
 $problem = Find-HEATBusinessObject -SelectAll -From 'Problem#' -Where @{Field = 'ProblemNumber'; Value = '10075'; Condition = '='} -Link @{Relation = 'ProblemAssociatesChange'; Object = 'Change#'}
 ```
