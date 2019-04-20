@@ -46,11 +46,12 @@ function Connect-HEATProxy {
         [Parameter(Position = 2)]
         [pscredential]$Credential,
         [Parameter()]
-        [switch]
-        $NoSSL
+        [switch]$NoSSL,
+        [switch]$TrustSSL,
+        [string]$OnPremUrl
     )
 
-    # validate all our parameters are either provided or cached
+    # Validate all our parameters are either provided or cached
     if (-not $TenantID) {
 
         if ($script:HEATCONNECTION.tenantId) {
@@ -59,7 +60,7 @@ function Connect-HEATProxy {
 
         } else {
 
-            throw 'tenantId was neither provided nor cached. please specify -TenantID'
+            throw 'TenantId was neither provided nor cached. please specify -TenantID'
 
         }
 
@@ -73,7 +74,7 @@ function Connect-HEATProxy {
 
         } else {
 
-            throw 'role was neither provided nor cached. please specify -Role'
+            throw 'Role was neither provided nor cached. please specify -Role'
 
         }
 
@@ -87,7 +88,7 @@ function Connect-HEATProxy {
 
         } else {
 
-            throw 'credential was neither provided nor cached. please specify -Credential'
+            throw 'Credential was neither provided nor cached. please specify -Credential'
 
         }
 
@@ -107,23 +108,67 @@ function Connect-HEATProxy {
 
     }
 
-    if ($NoSSL) {
+    if ($TrustSSL) {
 
-        $webProxyUri = "http://$TenantID/HEAT/ServiceAPI/FRSHEATIntegration.asmx?wsdl"  # Kreloc needed /HEAT/ in his environment, not sure how true that is for other on prem.
-
-    } else {
-
-        $webProxyUri = "https://$TenantID/ServiceAPI/FRSHEATIntegration.asmx?wsdl"
+        add-type @"
+        using System.Net;
+        using System.Security.Cryptography.X509Certificates;
+        public class TrustAllCertsPolicy : ICertificatePolicy {
+            public bool CheckValidationResult(
+                ServicePoint srvPoint, X509Certificate certificate,
+                WebRequest request, int certificateProblem) {
+                return true;
+            }
+        }
+"@
+        # This allows to connect to HTTPS with self-signed (test environnement) or expired certificate
+        [System.Net.ServicePointManager]::CertificatePolicy = New-Object TrustAllCertsPolicy
 
     }
 
-    # this just creates the proxy object we'll call, it does NOT connect to the service!
+    if (-not $OnPremUrl) {
+        
+        if ($script:HEATCONNECTION.OnPremUrl) {
+
+            $NoSSL = $script:HEATCONNECTION.OnPremUrl
+
+        } else {
+
+            $OnPremUrl = ''
+
+        }
+    }
+
+    if ($OnPremUrl) {
+
+        if (-not ( $script:HEATCONNECTION.OnPremUrl -match '/' -or $OnPremUrl -match '/' ) ) {
+
+            $OnPremUrl = $OnPremUrl +'/'
+
+        }
+
+    }
+
+    # Generate URL
+    $webProxyUri = "$TenantID/$($OnPremUrl)ServiceAPI/FRSHEATIntegration.asmx?wsdl"
+
+    if ($NoSSL) {
+
+        $webProxyUri = "http://" + $webProxyUri
+
+    } else {
+
+        $webProxyUri = "https://" + $webProxyUri
+
+    }
+
+    # This just creates the proxy object we'll call, it does NOT connect to the service!
+    Write-Verbose -Message "Set connection to $webProxyUri"
     $script:HEATPROXY = New-WebServiceProxy -Uri $webProxyUri -Namespace "WebServiceProxy" -Class "HEAT"
 
-    <#
-        this is the piece that actually authenticates and connects to the service. we'll need to reference the
-        resultant sessionKey on all successive API calls
-    #>
+    # This is the piece that actually authenticates and connects to the service. we'll need to reference the
+    # resultant sessionKey on all successive API calls
+
     $script:HEATCONNECTION = $script:HEATPROXY.Connect(
         $Credential.UserName,
         $Credential.GetNetworkCredential().Password,
@@ -131,21 +176,23 @@ function Connect-HEATProxy {
         $Role
     )
 
-    # throw an error if anything other than 'Success'
+    # Throw an error if anything other than 'Success'
     if ($script:HEATCONNECTION.connectionStatus -notlike 'Success') {
 
         throw "connectionStatus - $($script:HEATCONNECTION.connectionStatus): $($script:HEATCONNECTION.exceptionReason)"
 
     }
 
-    # store the provided credentials in the scope of the script
+    # Store the provided credentials in the scope of the script
     $script:HEATCREDENTIALS = $Credential
-    # add the tenantID to the connection proxy so it's easy to reference in the rest of our API calls
+    # Add the tenantID to the connection proxy so it's easy to reference in the rest of our API calls
     $script:HEATCONNECTION | Add-Member -NotePropertyName 'tenantId' -NotePropertyValue $TenantID
-    # add the role to the connection proxy so we can easily reference it to renew when session expires
+    # Add the role to the connection proxy so we can easily reference it to renew when session expires
     $script:HEATCONNECTION | Add-Member -NotePropertyName 'role'     -NotePropertyValue $Role
-    # add if NoSSL was used
+    # Add if NoSSL was used
     $script:HEATCONNECTION | Add-Member -NotePropertyName 'NoSSL' -NotePropertyValue $NoSSL
+    # Add if OnPremUrl was used
+    $script:HEATCONNECTION | Add-Member -NotePropertyName 'OnPremUrl' -NotePropertyValue $OnPremUrl
 
     Write-Verbose -Message "connection to $webProxyUri succeeded"
 
